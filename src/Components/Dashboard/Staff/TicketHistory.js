@@ -76,7 +76,7 @@ const TicketHistory = ({ tickets: allTickets }) => {
       if (selectedCustomerID) {
         try {
           const response = await axios.get(
-            `http://localhost:8070/api/customers/${selectedCustomerID}`
+            `https://govhub-backend.tharuksha.com/api/customers/${selectedCustomerID}`
           );
           setCustomerData(response.data);
         } catch (error) {

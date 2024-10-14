@@ -105,21 +105,34 @@ const AdminDashboard = () => {
         solvedAndPendingTicketsRes,
         topStaffRes,
       ] = await Promise.all([
-        axios.get("http://localhost:8070/api/dashboard/departments/count"),
-        axios.get("http://localhost:8070/api/dashboard/tickets/solved/count"),
-        axios.get("http://localhost:8070/api/dashboard/staff/count"),
-        axios.get("http://localhost:8070/api/dashboard/customers/count"),
         axios.get(
-          "http://localhost:8070/api/dashboard/departments/solvedTickets"
+          "https://govhub-backend.tharuksha.com/api/dashboard/departments/count"
         ),
-        axios.get("http://localhost:8070/api/dashboard/tickets/solvedTickets"),
         axios.get(
-          "http://localhost:8070/api/dashboard/tickets/solvedAndPendingTickets"
+          "https://govhub-backend.tharuksha.com/api/dashboard/tickets/solved/count"
         ),
-        axios.post("http://localhost:8070/api/dashboard/staff/solvedTickets", {
-          duration,
-          performance,
-        }),
+        axios.get(
+          "https://govhub-backend.tharuksha.com/api/dashboard/staff/count"
+        ),
+        axios.get(
+          "https://govhub-backend.tharuksha.com/api/dashboard/customers/count"
+        ),
+        axios.get(
+          "https://govhub-backend.tharuksha.com/api/dashboard/departments/solvedTickets"
+        ),
+        axios.get(
+          "https://govhub-backend.tharuksha.com/api/dashboard/tickets/solvedTickets"
+        ),
+        axios.get(
+          "https://govhub-backend.tharuksha.com/api/dashboard/tickets/solvedAndPendingTickets"
+        ),
+        axios.post(
+          "https://govhub-backend.tharuksha.com/api/dashboard/staff/solvedTickets",
+          {
+            duration,
+            performance,
+          }
+        ),
       ]);
 
       setTicketDetailsForWeek(solvedAndPendingTicketsRes.data);

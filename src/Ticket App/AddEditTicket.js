@@ -78,7 +78,7 @@ const AddEditTicket = () => {
       const fetchTicketDetails = async () => {
         try {
           const res = await axios.get(
-            `http://localhost:8070/api/tickets/${id}`
+            `https://govhub-backend.tharuksha.com/api/tickets/${id}`
           );
           setTicket(res.data);
           setIsEdit(true);
@@ -108,12 +108,18 @@ const AddEditTicket = () => {
     e.preventDefault();
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:8070/api/tickets/${id}`, {
-          feedback: ticket.feedback,
-        });
+        await axios.put(
+          `https://govhub-backend.tharuksha.com/api/tickets/${id}`,
+          {
+            feedback: ticket.feedback,
+          }
+        );
         toast.success("Feedback updated successfully");
       } else {
-        await axios.post("http://localhost:8070/api/tickets", ticket);
+        await axios.post(
+          "https://govhub-backend.tharuksha.com/api/tickets",
+          ticket
+        );
         toast.success("Ticket added successfully");
       }
       navigate("/ticket");

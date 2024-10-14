@@ -118,7 +118,7 @@ const LoginPage = () => {
     setLoading(true); // Show spinner
     try {
       const res = await axios.post(
-        "http://localhost:8070/api/staff/login",
+        "https://govhub-backend.tharuksha.com/api/staff/login",
         credentials
       );
       localStorage.setItem("token", res.data.token);

@@ -79,17 +79,17 @@ const ViewTicket = () => {
     setIsLoading(true);
     try {
       const ticketRes = await axios.get(
-        `http://localhost:8070/api/tickets/${id}`
+        `https://govhub-backend.tharuksha.com/api/tickets/${id}`
       );
       setTicket(ticketRes.data);
 
       const customerRes = await axios.get(
-        `http://localhost:8070/api/customers/${ticketRes.data.customerID}`
+        `https://govhub-backend.tharuksha.com/api/customers/${ticketRes.data.customerID}`
       );
       setCustomer(customerRes.data);
 
       const departmentRes = await axios.get(
-        `http://localhost:8070/api/departments/${ticketRes.data.departmentID}`
+        `https://govhub-backend.tharuksha.com/api/departments/${ticketRes.data.departmentID}`
       );
       setDepartment(departmentRes.data);
     } catch (error) {

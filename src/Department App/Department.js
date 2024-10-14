@@ -79,7 +79,7 @@ const columns = [
         const fetchName = async () => {
           try {
             const response = await axios.get(
-              `http://localhost:8070/api/staff/${cell.getValue()}`
+              `https://govhub-backend.tharuksha.com/api/staff/${cell.getValue()}`
             );
             const firstName = response.data.firstName || "No data found";
             const lastName = response.data.lastName || "";
@@ -140,7 +140,9 @@ const DepartmentApp = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:8070/api/departments");
+      const response = await axios.get(
+        "https://govhub-backend.tharuksha.com/api/departments"
+      );
       setData(response.data);
     } catch (error) {
       toast.error("Failed to fetch departments");
@@ -195,7 +197,9 @@ const DepartmentApp = () => {
           label: "Yes",
           onClick: async () => {
             try {
-              await axios.delete(`http://localhost:8070/api/departments/${id}`);
+              await axios.delete(
+                `https://govhub-backend.tharuksha.com/api/departments/${id}`
+              );
               toast.success("Department deleted successfully");
               fetchData();
             } catch (error) {

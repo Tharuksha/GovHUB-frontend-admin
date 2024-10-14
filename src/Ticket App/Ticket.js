@@ -149,10 +149,10 @@ const TicketApp = () => {
     setIsLoading(true);
     try {
       const ticketsResponse = await axios.get(
-        "http://localhost:8070/api/tickets"
+        "https://govhub-backend.tharuksha.com/api/tickets"
       );
       const departmentsResponse = await axios.get(
-        "http://localhost:8070/api/departments"
+        "https://govhub-backend.tharuksha.com/api/departments"
       );
 
       const departments = departmentsResponse.data.reduce((acc, dept) => {
@@ -228,7 +228,9 @@ const TicketApp = () => {
           label: "Yes",
           onClick: async () => {
             try {
-              await axios.delete(`http://localhost:8070/api/tickets/${id}`);
+              await axios.delete(
+                `https://govhub-backend.tharuksha.com/api/tickets/${id}`
+              );
               toast.success("Ticket deleted successfully");
               fetchData(); // Refetch data after deletion
             } catch (error) {

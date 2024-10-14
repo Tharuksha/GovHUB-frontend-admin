@@ -98,7 +98,9 @@ const AddEditStaff = () => {
   const fetchStaffDetails = async (staffId) => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`http://localhost:8070/api/staff/${staffId}`);
+      const res = await axios.get(
+        `https://govhub-backend.tharuksha.com/api/staff/${staffId}`
+      );
       setStaff({
         ...res.data,
         hireDate: dayjs(res.data.hireDate).format("YYYY-MM-DD"),
@@ -114,7 +116,9 @@ const AddEditStaff = () => {
   const fetchDepartments = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get("http://localhost:8070/api/departments");
+      const res = await axios.get(
+        "https://govhub-backend.tharuksha.com/api/departments"
+      );
       setDepartments(res.data);
     } catch (error) {
       toast.error("Error fetching departments");
@@ -172,10 +176,16 @@ const AddEditStaff = () => {
     setIsLoading(true);
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:8070/api/staff/${id}`, staff);
+        await axios.put(
+          `https://govhub-backend.tharuksha.com/api/staff/${id}`,
+          staff
+        );
         toast.success("Staff updated successfully");
       } else {
-        await axios.post("http://localhost:8070/api/staff", staff);
+        await axios.post(
+          "https://govhub-backend.tharuksha.com/api/staff",
+          staff
+        );
         toast.success("Staff added successfully");
       }
       navigate("/staff");

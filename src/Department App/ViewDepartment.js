@@ -76,7 +76,7 @@ const ViewDepartment = () => {
     setIsLoading(true);
     try {
       const res = await axios.get(
-        `http://localhost:8070/api/departments/${id}`
+        `https://govhub-backend.tharuksha.com/api/departments/${id}`
       );
       setDepartment(res.data);
       localStorage.setItem("departmentId", id);

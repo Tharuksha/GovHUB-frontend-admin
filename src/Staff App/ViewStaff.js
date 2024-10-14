@@ -77,7 +77,9 @@ const ViewStaff = () => {
   const fetchStaffDetails = async () => {
     setIsLoading(true);
     try {
-      const res = await axios.get(`http://localhost:8070/api/staff/${id}`);
+      const res = await axios.get(
+        `https://govhub-backend.tharuksha.com/api/staff/${id}`
+      );
       setStaff(res.data);
     } catch (error) {
       console.error("Error fetching staff details:", error);

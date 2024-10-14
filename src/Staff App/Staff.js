@@ -81,7 +81,7 @@ const columns = [
         const fetchDepartmentName = async () => {
           try {
             const response = await axios.get(
-              `http://localhost:8070/api/departments/${cell.getValue()}`
+              `https://govhub-backend.tharuksha.com/api/departments/${cell.getValue()}`
             );
             setDepartmentName(response.data.departmentName);
           } catch (error) {
@@ -139,7 +139,9 @@ const StaffApp = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:8070/api/staff");
+      const response = await axios.get(
+        "https://govhub-backend.tharuksha.com/api/staff"
+      );
       let filteredData = response.data;
 
       // Filter out admin users if the current user is not an admin
@@ -199,7 +201,9 @@ const StaffApp = () => {
           label: "Yes",
           onClick: async () => {
             try {
-              await axios.delete(`http://localhost:8070/api/staff/${id}`);
+              await axios.delete(
+                `https://govhub-backend.tharuksha.com/api/staff/${id}`
+              );
               toast.success("Staff member deleted successfully");
               fetchData(); // Refetch data after deletion
             } catch (error) {

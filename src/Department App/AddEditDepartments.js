@@ -83,7 +83,7 @@ const AddEditDepartments = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:8070/api/departments/${id}`
+        `https://govhub-backend.tharuksha.com/api/departments/${id}`
       );
       setDepartment(response.data);
       setIsEdit(true);
@@ -99,7 +99,9 @@ const AddEditDepartments = () => {
   const fetchStaffMembers = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:8070/api/staff");
+      const response = await axios.get(
+        "https://govhub-backend.tharuksha.com/api/staff"
+      );
       setStaffMembers(response.data);
     } catch (error) {
       console.error("Error fetching staff members:", error);
@@ -154,7 +156,7 @@ const AddEditDepartments = () => {
     try {
       if (isEdit) {
         await axios.put(
-          `http://localhost:8070/api/departments/${id}`,
+          `https://govhub-backend.tharuksha.com/api/departments/${id}`,
           department
         );
         if (
@@ -163,29 +165,32 @@ const AddEditDepartments = () => {
         ) {
           if (previousHeadID) {
             const departments = await axios.get(
-              "http://localhost:8070/api/departments"
+              "https://govhub-backend.tharuksha.com/api/departments"
             );
             const isStillHead = departments.data.some(
               (dep) => dep.departmentHeadID === previousHeadID
             );
             if (!isStillHead) {
               await axios.put(
-                `http://localhost:8070/api/staff/${previousHeadID}`,
+                `https://govhub-backend.tharuksha.com/api/staff/${previousHeadID}`,
                 { role: "staff" }
               );
             }
           }
           await axios.put(
-            `http://localhost:8070/api/staff/${department.departmentHeadID}`,
+            `https://govhub-backend.tharuksha.com/api/staff/${department.departmentHeadID}`,
             { role: "dhead" }
           );
         }
         toast.success("Department updated successfully");
       } else {
-        await axios.post("http://localhost:8070/api/departments", department);
+        await axios.post(
+          "https://govhub-backend.tharuksha.com/api/departments",
+          department
+        );
         if (department.departmentHeadID) {
           await axios.put(
-            `http://localhost:8070/api/staff/${department.departmentHeadID}`,
+            `https://govhub-backend.tharuksha.com/api/staff/${department.departmentHeadID}`,
             { role: "dhead" }
           );
         }

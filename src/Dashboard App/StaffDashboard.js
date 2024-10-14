@@ -59,7 +59,7 @@ const StaffDashboard = () => {
     const fetchSolvedAndPendingTickets = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:8070/api/dashboard/staff/performance",
+          "https://govhub-backend.tharuksha.com/api/dashboard/staff/performance",
           { staffID: user?.id }
         );
         setUserPerformence(response.data[user?.id]);
@@ -75,7 +75,7 @@ const StaffDashboard = () => {
     const fetchTopStaff = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:8070/api/dashboard/staff/solvedTickets",
+          "https://govhub-backend.tharuksha.com/api/dashboard/staff/solvedTickets",
           { duration, performance }
         );
         setTopStaff(response.data);
@@ -91,7 +91,7 @@ const StaffDashboard = () => {
     const fetchRecentSolvedTickets = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8070/api/dashboard/staff/recentSolvedTickets/${user?.id}`
+          `https://govhub-backend.tharuksha.com/api/dashboard/staff/recentSolvedTickets/${user?.id}`
         );
         setRecentSolvedTickets(response.data);
       } catch (error) {
@@ -106,7 +106,7 @@ const StaffDashboard = () => {
     const fetchUserTicketHistory = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8070/api/dashboard/staff/solvedTicketsHistory/${user?.id}`
+          `https://govhub-backend.tharuksha.com/api/dashboard/staff/solvedTicketsHistory/${user?.id}`
         );
         setUserTicketHistory(response.data);
       } catch (error) {
@@ -121,7 +121,8 @@ const StaffDashboard = () => {
     const fetchData = async () => {
       try {
         const res = await axios.post(
-          "http://localhost:8070/api/dashboard/staff/solvedTickets/" + user?.id,
+          "https://govhub-backend.tharuksha.com/api/dashboard/staff/solvedTickets/" +
+            user?.id,
           { duration: userDuration }
         );
         setUserSolvedTicket(res.data);
@@ -136,7 +137,9 @@ const StaffDashboard = () => {
   useEffect(() => {
     const getPendingTickets = async () => {
       try {
-        const res = await axios.get("http://localhost:8070/api/tickets");
+        const res = await axios.get(
+          "https://govhub-backend.tharuksha.com/api/tickets"
+        );
         let ticketList = res.data.filter(
           (item) =>
             item.status === "Pending" &&
