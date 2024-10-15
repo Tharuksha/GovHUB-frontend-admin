@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -59,15 +59,23 @@ const theme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
+          "& .MuiInputBase-input": {
+            color: "black", // Ensure text is visible
+          },
           "& .MuiOutlinedInput-root": {
-            transition: "border-color 0.3s ease, background-color 0.3s ease",
+            "& fieldset": {
+              borderColor: "rgba(0, 0, 0, 0.23)", // Ensure border is visible
+            },
             "&:hover fieldset": {
               borderColor: "#2979ff",
             },
             "&.Mui-focused fieldset": {
               borderColor: "#2979ff",
-              backgroundColor: "#e3f2fd",
+              backgroundColor: "rgba(41, 121, 255, 0.1)", // Light blue background when focused
             },
+          },
+          "& .MuiInputLabel-root": {
+            color: "rgba(0, 0, 0, 0.6)", // Ensure label is visible
           },
         },
       },
@@ -83,7 +91,8 @@ const AnimatedContainer = animated(Container);
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -101,19 +110,20 @@ const LoginPage = () => {
     config: { tension: 180, friction: 12 },
   });
 
-  // Handle input change
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setCredentials((prevCredentials) => ({
-      ...prevCredentials,
-      [name]: value,
-    }));
-  };
+  // Handle email input change
+  const handleEmailChange = useCallback((e) => {
+    setEmail(e.target.value);
+  }, []);
+
+  // Handle password input change
+  const handlePasswordChange = useCallback((e) => {
+    setPassword(e.target.value);
+  }, []);
 
   // Toggle password visibility
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const togglePasswordVisibility = useCallback(() => {
+    setShowPassword((prev) => !prev);
+  }, []);
 
   // Handle form submit
   const handleSubmit = async (e) => {
@@ -122,7 +132,7 @@ const LoginPage = () => {
     try {
       const res = await axios.post(
         "https://govhub-backend.tharuksha.com/api/staff/login",
-        credentials
+        { email, password }
       );
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("staff", JSON.stringify(res.data.staff));
@@ -132,7 +142,10 @@ const LoginPage = () => {
       window.location.reload();
     } catch (error) {
       setLoading(false);
-      toast.error("Login failed! " + error.response.data.message);
+      toast.error(
+        "Login failed! " +
+          (error.response?.data?.message || "Unknown error occurred")
+      );
     }
   };
 
@@ -202,9 +215,15 @@ const LoginPage = () => {
                 name="email"
                 autoComplete="email"
                 autoFocus
-                onChange={handleInputChange}
-                value={credentials.email}
+                onChange={handleEmailChange}
+                value={email}
                 variant="outlined"
+                InputProps={{
+                  style: { color: "black" }, // Ensure input text is black
+                }}
+                InputLabelProps={{
+                  style: { color: "rgba(0, 0, 0, 0.6)" }, // Ensure label is visible
+                }}
               />
               <AnimatedTextField
                 margin="normal"
@@ -215,10 +234,11 @@ const LoginPage = () => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 autoComplete="current-password"
-                onChange={handleInputChange}
-                value={credentials.password}
+                onChange={handlePasswordChange}
+                value={password}
                 variant="outlined"
                 InputProps={{
+                  style: { color: "black" }, // Ensure input text is black
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
@@ -230,6 +250,9 @@ const LoginPage = () => {
                       </IconButton>
                     </InputAdornment>
                   ),
+                }}
+                InputLabelProps={{
+                  style: { color: "rgba(0, 0, 0, 0.6)" }, // Ensure label is visible
                 }}
               />
               <AnimatedButton
