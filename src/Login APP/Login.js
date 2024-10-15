@@ -84,7 +84,7 @@ const AnimatedContainer = animated(Container);
 const LoginPage = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false); // New state for loading spinner
+  const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
   // Animation for form sliding in from the bottom
@@ -104,7 +104,10 @@ const LoginPage = () => {
   // Handle input change
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCredentials({ ...credentials, [name]: value });
+    setCredentials((prevCredentials) => ({
+      ...prevCredentials,
+      [name]: value,
+    }));
   };
 
   // Toggle password visibility
@@ -115,7 +118,7 @@ const LoginPage = () => {
   // Handle form submit
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); // Show spinner
+    setLoading(true);
     try {
       const res = await axios.post(
         "https://govhub-backend.tharuksha.com/api/staff/login",
@@ -124,11 +127,11 @@ const LoginPage = () => {
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("staff", JSON.stringify(res.data.staff));
       toast.success("Login successful");
-      setLoading(false); // Hide spinner
+      setLoading(false);
       navigate("/");
       window.location.reload();
     } catch (error) {
-      setLoading(false); // Hide spinner
+      setLoading(false);
       toast.error("Login failed! " + error.response.data.message);
     }
   };
@@ -200,6 +203,7 @@ const LoginPage = () => {
                 autoComplete="email"
                 autoFocus
                 onChange={handleInputChange}
+                value={credentials.email}
                 variant="outlined"
               />
               <AnimatedTextField
@@ -212,6 +216,7 @@ const LoginPage = () => {
                 id="password"
                 autoComplete="current-password"
                 onChange={handleInputChange}
+                value={credentials.password}
                 variant="outlined"
                 InputProps={{
                   endAdornment: (
@@ -232,7 +237,7 @@ const LoginPage = () => {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2, py: 1.5 }}
-                disabled={loading} // Disable button while loading
+                disabled={loading}
               >
                 {loading ? (
                   <CircularProgress size={24} sx={{ color: "white" }} />
