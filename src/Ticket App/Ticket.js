@@ -149,10 +149,10 @@ const TicketApp = () => {
     setIsLoading(true);
     try {
       const ticketsResponse = await axios.get(
-        "https://govhub-backend.tharuksha.com/api/tickets"
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets"
       );
       const departmentsResponse = await axios.get(
-        "https://govhub-backend.tharuksha.com/api/departments"
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments"
       );
 
       const departments = departmentsResponse.data.reduce((acc, dept) => {
@@ -229,7 +229,7 @@ const TicketApp = () => {
           onClick: async () => {
             try {
               await axios.delete(
-                `https://govhub-backend.tharuksha.com/api/tickets/${id}`
+                `https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets/${id}`
               );
               toast.success("Ticket deleted successfully");
               fetchData(); // Refetch data after deletion

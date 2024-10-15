@@ -79,7 +79,7 @@ const columns = [
         const fetchName = async () => {
           try {
             const response = await axios.get(
-              `https://govhub-backend.tharuksha.com/api/staff/${cell.getValue()}`
+              `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${cell.getValue()}`
             );
             const firstName = response.data.firstName || "No data found";
             const lastName = response.data.lastName || "";
@@ -141,7 +141,7 @@ const DepartmentApp = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        "https://govhub-backend.tharuksha.com/api/departments"
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments"
       );
       setData(response.data);
     } catch (error) {
@@ -198,7 +198,7 @@ const DepartmentApp = () => {
           onClick: async () => {
             try {
               await axios.delete(
-                `https://govhub-backend.tharuksha.com/api/departments/${id}`
+                `https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments/${id}`
               );
               toast.success("Department deleted successfully");
               fetchData();

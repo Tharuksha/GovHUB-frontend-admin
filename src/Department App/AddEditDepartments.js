@@ -83,7 +83,7 @@ const AddEditDepartments = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `https://govhub-backend.tharuksha.com/api/departments/${id}`
+        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments/${id}`
       );
       setDepartment(response.data);
       setIsEdit(true);
@@ -100,7 +100,7 @@ const AddEditDepartments = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        "https://govhub-backend.tharuksha.com/api/staff"
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff"
       );
       setStaffMembers(response.data);
     } catch (error) {
@@ -156,7 +156,7 @@ const AddEditDepartments = () => {
     try {
       if (isEdit) {
         await axios.put(
-          `https://govhub-backend.tharuksha.com/api/departments/${id}`,
+          `https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments/${id}`,
           department
         );
         if (
@@ -165,32 +165,32 @@ const AddEditDepartments = () => {
         ) {
           if (previousHeadID) {
             const departments = await axios.get(
-              "https://govhub-backend.tharuksha.com/api/departments"
+              "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments"
             );
             const isStillHead = departments.data.some(
               (dep) => dep.departmentHeadID === previousHeadID
             );
             if (!isStillHead) {
               await axios.put(
-                `https://govhub-backend.tharuksha.com/api/staff/${previousHeadID}`,
+                `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${previousHeadID}`,
                 { role: "staff" }
               );
             }
           }
           await axios.put(
-            `https://govhub-backend.tharuksha.com/api/staff/${department.departmentHeadID}`,
+            `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${department.departmentHeadID}`,
             { role: "dhead" }
           );
         }
         toast.success("Department updated successfully");
       } else {
         await axios.post(
-          "https://govhub-backend.tharuksha.com/api/departments",
+          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments",
           department
         );
         if (department.departmentHeadID) {
           await axios.put(
-            `https://govhub-backend.tharuksha.com/api/staff/${department.departmentHeadID}`,
+            `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${department.departmentHeadID}`,
             { role: "dhead" }
           );
         }

@@ -131,7 +131,7 @@ const LoginPage = () => {
     setLoading(true);
     try {
       const res = await axios.post(
-        "https://govhub-backend.tharuksha.com/api/staff/login",
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/login",
         { email, password }
       );
       localStorage.setItem("token", res.data.token);

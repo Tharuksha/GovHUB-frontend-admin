@@ -59,7 +59,7 @@ const StaffDashboard = () => {
     const fetchSolvedAndPendingTickets = async () => {
       try {
         const response = await axios.post(
-          "https://govhub-backend.tharuksha.com/api/dashboard/staff/performance",
+          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/performance",
           { staffID: user?.id }
         );
         setUserPerformence(response.data[user?.id]);
@@ -75,7 +75,7 @@ const StaffDashboard = () => {
     const fetchTopStaff = async () => {
       try {
         const response = await axios.post(
-          "https://govhub-backend.tharuksha.com/api/dashboard/staff/solvedTickets",
+          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/solvedTickets",
           { duration, performance }
         );
         setTopStaff(response.data);
@@ -91,7 +91,7 @@ const StaffDashboard = () => {
     const fetchRecentSolvedTickets = async () => {
       try {
         const response = await axios.get(
-          `https://govhub-backend.tharuksha.com/api/dashboard/staff/recentSolvedTickets/${user?.id}`
+          `https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/recentSolvedTickets/${user?.id}`
         );
         setRecentSolvedTickets(response.data);
       } catch (error) {
@@ -106,7 +106,7 @@ const StaffDashboard = () => {
     const fetchUserTicketHistory = async () => {
       try {
         const response = await axios.get(
-          `https://govhub-backend.tharuksha.com/api/dashboard/staff/solvedTicketsHistory/${user?.id}`
+          `https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/solvedTicketsHistory/${user?.id}`
         );
         setUserTicketHistory(response.data);
       } catch (error) {
@@ -121,7 +121,7 @@ const StaffDashboard = () => {
     const fetchData = async () => {
       try {
         const res = await axios.post(
-          "https://govhub-backend.tharuksha.com/api/dashboard/staff/solvedTickets/" +
+          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/solvedTickets/" +
             user?.id,
           { duration: userDuration }
         );
@@ -138,7 +138,7 @@ const StaffDashboard = () => {
     const getPendingTickets = async () => {
       try {
         const res = await axios.get(
-          "https://govhub-backend.tharuksha.com/api/tickets"
+          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets"
         );
         let ticketList = res.data.filter(
           (item) =>
