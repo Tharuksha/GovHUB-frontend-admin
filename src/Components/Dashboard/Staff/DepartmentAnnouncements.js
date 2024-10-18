@@ -45,6 +45,7 @@ const DepartmentAnnouncements = ({ user }) => {
           departmentID: user.departmentID,
           content: newAnnouncement,
           postedBy: user.id,
+          userRole: user.role, // Add this line
         }
       );
       setNewAnnouncement("");
@@ -58,7 +59,14 @@ const DepartmentAnnouncements = ({ user }) => {
   const handleDeleteAnnouncement = async (id) => {
     try {
       await axios.delete(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/${id}`
+        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/${id}`,
+        {
+          data: {
+            // Use 'data' for sending body with DELETE request
+            userRole: user.role,
+            departmentID: user.departmentID,
+          },
+        }
       );
       fetchAnnouncements();
     } catch (error) {
