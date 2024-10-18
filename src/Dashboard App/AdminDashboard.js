@@ -392,13 +392,13 @@ const AdminDashboard = () => {
             />
           </Grid>
 
-          {/* Add the DepartmentAnnouncements component */}
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <ModernCard>
-                <DepartmentAnnouncements user={user} />
-              </ModernCard>
-            </Grid>
+          {/* Department Announcements Section */}
+          <Grid item xs={12}>
+            <ModernCard sx={{ p: 0 }}>
+              {" "}
+              {/* Remove padding from ModernCard */}
+              <DepartmentAnnouncements user={user} />
+            </ModernCard>
           </Grid>
 
           <Grid item xs={12} md={6}>
