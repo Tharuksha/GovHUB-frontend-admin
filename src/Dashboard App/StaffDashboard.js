@@ -256,14 +256,14 @@ const StaffDashboard = () => {
           </Grid>
 
           {/* Department Announcements */}
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <ModernCard>
               <DepartmentAnnouncements user={user} />
             </ModernCard>
           </Grid>
 
           {/* Recent Messages */}
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <ModernCard>
               <Box
                 display="flex"
