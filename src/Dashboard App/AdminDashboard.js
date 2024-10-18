@@ -358,6 +358,12 @@ const AdminDashboard = () => {
 
         {isLoading && <LinearProgress sx={{ mb: 2 }} />}
 
+        {/* Add the DepartmentAnnouncements component */}
+        <Grid item xs={12}>
+          <ModernCard>
+            <DepartmentAnnouncements user={user} />
+          </ModernCard>
+        </Grid>
         <Grid container spacing={3}>
           <Grid item xs={12} sm={6} md={3}>
             <CountCard
@@ -502,13 +508,6 @@ const AdminDashboard = () => {
                 option={solvedCasesChartOptions}
                 style={{ height: 400 }}
               />
-            </ModernCard>
-          </Grid>
-
-          {/* Add the DepartmentAnnouncements component */}
-          <Grid item xs={12}>
-            <ModernCard>
-              <DepartmentAnnouncements user={user} />
             </ModernCard>
           </Grid>
         </Grid>
