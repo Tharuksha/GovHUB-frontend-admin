@@ -138,7 +138,7 @@ const AdminDashboard = () => {
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/tickets/solvedAndPendingTickets"
         ),
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/announcements"
+          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements"
         ),
         axios.post(
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/solvedTickets",
@@ -189,7 +189,7 @@ const AdminDashboard = () => {
   const handleCreateAnnouncement = async () => {
     try {
       await axios.post(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/announcements",
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements",
         {
           content: newAnnouncement,
           departmentID: "all", // Assuming this is for all departments
