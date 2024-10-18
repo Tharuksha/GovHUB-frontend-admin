@@ -11,12 +11,6 @@ import {
   IconButton,
   Tooltip,
   LinearProgress,
-  Button,
-  TextField,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useSpring, animated, config } from "react-spring";
@@ -26,7 +20,6 @@ import {
   Work as WorkIcon,
   AssignmentTurnedIn as AssignmentTurnedInIcon,
   Refresh as RefreshIcon,
-  Announcement as AnnouncementIcon,
 } from "@mui/icons-material";
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
@@ -94,9 +87,6 @@ const AdminDashboard = () => {
     useState({});
   const [ticketDetailsForWeek, setTicketDetailsForWeek] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [announcements, setAnnouncements] = useState([]);
-  const [openAnnouncementDialog, setOpenAnnouncementDialog] = useState(false);
-  const [newAnnouncement, setNewAnnouncement] = useState("");
 
   useEffect(() => {
     fetchData();
@@ -114,7 +104,6 @@ const AdminDashboard = () => {
         solvedTicketCountRes,
         solvedAndPendingTicketsRes,
         topStaffRes,
-        announcementsRes,
       ] = await Promise.all([
         axios.get(
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/departments/count"
@@ -139,10 +128,10 @@ const AdminDashboard = () => {
         ),
         axios.post(
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/solvedTickets",
-          { duration, performance }
-        ),
-        axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/"
+          {
+            duration,
+            performance,
+          }
         ),
       ]);
 
@@ -154,7 +143,9 @@ const AdminDashboard = () => {
       setStaffCount(staffRes.data.count);
       setCustomerCount(customerRes.data.count);
       setTopStaff(topStaffRes.data);
-      setAnnouncements(announcementsRes.data);
+
+      // Simulating API delay
+      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setIsLoading(false);
     } catch (error) {
@@ -169,31 +160,6 @@ const AdminDashboard = () => {
 
   const onPerformancechange = (value) => {
     setPerformance(value);
-  };
-
-  const handleOpenAnnouncementDialog = () => {
-    setOpenAnnouncementDialog(true);
-  };
-
-  const handleCloseAnnouncementDialog = () => {
-    setOpenAnnouncementDialog(false);
-    setNewAnnouncement("");
-  };
-
-  const handleCreateAnnouncement = async () => {
-    try {
-      await axios.post(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/",
-        {
-          content: newAnnouncement,
-          departmentID: "all", // Assuming this is for all departments
-        }
-      );
-      handleCloseAnnouncementDialog();
-      fetchData(); // Refresh data to include the new announcement
-    } catch (error) {
-      console.error("Error creating announcement", error);
-    }
   };
 
   const fadeIn = useSpring({
@@ -248,13 +214,13 @@ const AdminDashboard = () => {
     title: {
       text: "Solved Cases Over Time",
       left: "center",
-      top: 20,
+      top: 20, // Add some top padding
       textStyle: {
-        fontSize: 16,
+        fontSize: 16, // Adjust font size if needed
       },
     },
     grid: {
-      top: 60,
+      top: 60, // Increase top margin to make room for title
       bottom: 20,
       left: 20,
       right: 20,
@@ -280,7 +246,7 @@ const AdminDashboard = () => {
     ],
     legend: {
       data: ["Pending Tickets", "Solved Tickets"],
-      bottom: 0,
+      bottom: 0, // Move legend to bottom
     },
     tooltip: { trigger: "axis" },
   };
@@ -490,46 +456,8 @@ const AdminDashboard = () => {
               </Box>
             </ModernCard>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <ModernCard>
-              <Typography variant="h6" gutterBottom color="primary">
-                Department Announcements
-              </Typography>
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<AnnouncementIcon />}
-                onClick={handleOpenAnnouncementDialog}
-                sx={{ mb: 2 }}
-              >
-                Create Announcement
-              </Button>
-              <Box sx={{ maxHeight: 400, overflowY: "auto" }}>
-                {announcements.map((announcement, index) => (
-                  <Box
-                    key={index}
-                    sx={{
-                      mb: 2,
-                      p: 2,
-                      bgcolor: "background.paper",
-                      borderRadius: 2,
-                      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
-                    }}
-                  >
-                    <Typography variant="body1">
-                      {announcement.content}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      Posted on:{" "}
-                      {new Date(announcement.createdAt).toLocaleString()}
-                    </Typography>
-                  </Box>
-                ))}
-              </Box>
-            </ModernCard>
-          </Grid>
 
-          <Grid item xs={12}>
+          <Grid item xs={12} md={6}>
             <ModernCard>
               <ReactECharts
                 option={departmentChartOptions}
@@ -574,36 +502,9 @@ const AdminDashboard = () => {
             </ModernCard>
           </Grid>
         </Grid>
-
-        <Dialog
-          open={openAnnouncementDialog}
-          onClose={handleCloseAnnouncementDialog}
-        >
-          <DialogTitle>Create New Announcement</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label="Announcement"
-              type="text"
-              fullWidth
-              multiline
-              rows={4}
-              value={newAnnouncement}
-              onChange={(e) => setNewAnnouncement(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleCloseAnnouncementDialog} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleCreateAnnouncement} color="primary">
-              Create
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Box>
     </ThemeProvider>
   );
 };
+
 export default AdminDashboard;
