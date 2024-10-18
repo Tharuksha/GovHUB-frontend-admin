@@ -20,6 +20,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import MenuIcon from "@mui/icons-material/Menu";
+import MessageIcon from "@mui/icons-material/Message";
 import Logo from "../assets/logo.png";
 import { useNavigate, useLocation } from "react-router-dom";
 
@@ -75,6 +76,7 @@ const SideBar = () => {
       roles: ["dhead", "admin"],
     },
     { name: "Ticket", path: "/ticket", icon: <ConfirmationNumberIcon /> },
+    { name: "Messages", path: "/messages", icon: <MessageIcon /> },
   ];
 
   const drawer = (
