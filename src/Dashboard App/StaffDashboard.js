@@ -12,6 +12,10 @@ import {
   CssBaseline,
   Button,
   Stack,
+  List,
+  ListItem,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useSpring, animated } from "react-spring";
@@ -22,6 +26,7 @@ import {
   Visibility as VisibilityIcon,
   CheckCircle as CheckCircleIcon,
   AccessTime as AccessTimeIcon,
+  Message as MessageIcon,
 } from "@mui/icons-material";
 import RecentlySolvedTicketCard from "../Components/Dashboard/Staff/RecentlySolvedTicket";
 import TicketHistory from "../Components/Dashboard/Staff/TicketHistory";
@@ -57,6 +62,7 @@ const StaffDashboard = () => {
   const [userTicketHistory, setUserTicketHistory] = useState([]);
   const [userPerformence, setUserPerformence] = useState([]);
   const [pendingTickets, setPendingTickets] = useState([]);
+  const [recentMessages, setRecentMessages] = useState([]);
 
   useEffect(() => {
     const fetchSolvedAndPendingTickets = async () => {
@@ -157,6 +163,21 @@ const StaffDashboard = () => {
     getPendingTickets();
   }, [userDuration, pendingTickets, user?.departmentID]);
 
+  useEffect(() => {
+    fetchRecentMessages();
+  }, []);
+
+  const fetchRecentMessages = async () => {
+    try {
+      const response = await axios.get(
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/messages/recent"
+      );
+      setRecentMessages(response.data);
+    } catch (error) {
+      console.error("Error fetching recent messages:", error);
+    }
+  };
+
   const onDurationchange = (value) => {
     setDuration(value);
   };
@@ -238,6 +259,57 @@ const StaffDashboard = () => {
           <Grid item xs={12}>
             <ModernCard>
               <DepartmentAnnouncements user={user} />
+            </ModernCard>
+          </Grid>
+
+          {/* Recent Messages */}
+          <Grid item xs={12}>
+            <ModernCard>
+              <Box
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
+                mb={2}
+              >
+                <Typography variant="h6" gutterBottom color="primary.main">
+                  Recent Messages
+                </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<MessageIcon />}
+                  onClick={() => navigate("/messages")}
+                >
+                  View All Messages
+                </Button>
+              </Box>
+              <List>
+                {recentMessages.slice(0, 5).map((message, index) => (
+                  <React.Fragment key={index}>
+                    <ListItem alignItems="flex-start">
+                      <ListItemText
+                        primary={`From: ${message.senderName} (${message.senderDepartment})`}
+                        secondary={
+                          <>
+                            <Typography
+                              component="span"
+                              variant="body2"
+                              color="text.primary"
+                            >
+                              {message.content.length > 50
+                                ? `${message.content.substring(0, 50)}...`
+                                : message.content}
+                            </Typography>
+                            {` — ${moment(message.timestamp).fromNow()}`}
+                          </>
+                        }
+                      />
+                    </ListItem>
+                    {index < recentMessages.length - 1 && (
+                      <Divider component="li" />
+                    )}
+                  </React.Fragment>
+                ))}
+              </List>
             </ModernCard>
           </Grid>
 
