@@ -15,6 +15,10 @@ import {
   Tooltip,
   LinearProgress,
   Grid,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useSpring, animated, config } from "react-spring";
@@ -83,6 +87,10 @@ const MessageCenter = () => {
     }
   };
 
+  const handleDepartmentChange = (event) => {
+    setSelectedDepartment(event.target.value);
+  };
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !selectedDepartment) {
       toast.error("Please enter a message and select a department");
@@ -101,6 +109,7 @@ const MessageCenter = () => {
         }
       );
       setNewMessage("");
+      setSelectedDepartment("");
       fetchMessages();
       toast.success("Message sent successfully");
     } catch (error) {
@@ -179,21 +188,24 @@ const MessageCenter = () => {
               <Typography variant="h6" gutterBottom>
                 Send New Message
               </Typography>
-              <TextField
-                select
-                fullWidth
-                label="Select Department"
-                value={selectedDepartment}
-                onChange={(e) => setSelectedDepartment(e.target.value)}
-                margin="normal"
-                variant="outlined"
-              >
-                {departments.map((dept) => (
-                  <option key={dept._id} value={dept._id}>
-                    {dept.departmentName}
-                  </option>
-                ))}
-              </TextField>
+              <FormControl fullWidth margin="normal">
+                <InputLabel id="department-select-label">
+                  Select Department
+                </InputLabel>
+                <Select
+                  labelId="department-select-label"
+                  id="department-select"
+                  value={selectedDepartment}
+                  label="Select Department"
+                  onChange={handleDepartmentChange}
+                >
+                  {departments.map((dept) => (
+                    <MenuItem key={dept._id} value={dept._id}>
+                      {dept.departmentName}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
               <TextField
                 fullWidth
                 label="Message"
