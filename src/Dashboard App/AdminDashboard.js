@@ -24,6 +24,7 @@ import {
 import ReactECharts from "echarts-for-react";
 import axios from "axios";
 import theme from "../theme/Theme";
+import DepartmentAnnouncements from "../Components/Dashboard/Staff/DepartmentAnnouncements";
 
 const AnimatedCard = animated(Card);
 const AnimatedTypography = animated(Typography);
@@ -87,6 +88,8 @@ const AdminDashboard = () => {
     useState({});
   const [ticketDetailsForWeek, setTicketDetailsForWeek] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+
+  const user = JSON.parse(localStorage.getItem("staff"));
 
   useEffect(() => {
     fetchData();
@@ -214,13 +217,13 @@ const AdminDashboard = () => {
     title: {
       text: "Solved Cases Over Time",
       left: "center",
-      top: 20, // Add some top padding
+      top: 20,
       textStyle: {
-        fontSize: 16, // Adjust font size if needed
+        fontSize: 16,
       },
     },
     grid: {
-      top: 60, // Increase top margin to make room for title
+      top: 60,
       bottom: 20,
       left: 20,
       right: 20,
@@ -246,7 +249,7 @@ const AdminDashboard = () => {
     ],
     legend: {
       data: ["Pending Tickets", "Solved Tickets"],
-      bottom: 0, // Move legend to bottom
+      bottom: 0,
     },
     tooltip: { trigger: "axis" },
   };
@@ -499,6 +502,13 @@ const AdminDashboard = () => {
                 option={solvedCasesChartOptions}
                 style={{ height: 400 }}
               />
+            </ModernCard>
+          </Grid>
+
+          {/* Add the DepartmentAnnouncements component */}
+          <Grid item xs={12}>
+            <ModernCard>
+              <DepartmentAnnouncements user={user} />
             </ModernCard>
           </Grid>
         </Grid>
