@@ -10,8 +10,10 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  LinearProgress,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import axios from "axios";
 import moment from "moment";
 
@@ -50,6 +52,17 @@ const DepartmentAnnouncements = ({ user }) => {
       fetchAnnouncements();
     } catch (error) {
       console.error("Error posting announcement", error);
+    }
+  };
+
+  const handleDeleteAnnouncement = async (id) => {
+    try {
+      await axios.delete(
+        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/${id}`
+      );
+      fetchAnnouncements();
+    } catch (error) {
+      console.error("Error deleting announcement", error);
     }
   };
 
@@ -107,9 +120,9 @@ const DepartmentAnnouncements = ({ user }) => {
             No announcements yet
           </Typography>
         ) : (
-          announcements.map((announcement, index) => (
+          announcements.map((announcement) => (
             <Card
-              key={index}
+              key={announcement._id}
               sx={{
                 mb: 2,
                 boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
@@ -119,9 +132,28 @@ const DepartmentAnnouncements = ({ user }) => {
               }}
             >
               <CardContent>
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  {announcement.content}
-                </Typography>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                >
+                  <Typography variant="body1" sx={{ mb: 1, flexGrow: 1 }}>
+                    {announcement.content}
+                  </Typography>
+                  {user.role === "dhead" && (
+                    <Tooltip title="Delete Announcement">
+                      <IconButton
+                        onClick={() =>
+                          handleDeleteAnnouncement(announcement._id)
+                        }
+                        size="small"
+                        sx={{ ml: 1 }}
+                      >
+                        <DeleteIcon fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
                 <Typography
                   variant="caption"
                   sx={{
