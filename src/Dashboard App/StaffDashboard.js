@@ -21,11 +21,13 @@ import {
   CalendarViewMonthRounded,
   Visibility as VisibilityIcon,
   CheckCircle as CheckCircleIcon,
+  AccessTime as AccessTimeIcon,
 } from "@mui/icons-material";
 import RecentlySolvedTicketCard from "../Components/Dashboard/Staff/RecentlySolvedTicket";
 import TicketHistory from "../Components/Dashboard/Staff/TicketHistory";
 import StaffPerformanceChart from "../Components/Dashboard/Staff/StaffPerformanceChart";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
 
 const AnimatedCard = animated(Card);
 
@@ -266,7 +268,18 @@ const StaffDashboard = () => {
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           Appointment:{" "}
-                          {new Date(ticket.appointmentDate).toLocaleString()}
+                          {moment(ticket.appointmentDate).format(
+                            "MMMM D, YYYY"
+                          )}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ display: "flex", alignItems: "center" }}
+                        >
+                          <AccessTimeIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                          Requested Time:{" "}
+                          {moment(ticket.appointmentDate).format("h:mm A")}
                         </Typography>
                       </Box>
                     </Box>
@@ -297,6 +310,7 @@ const StaffDashboard = () => {
               )}
             </ModernCard>
           </Grid>
+
           {/* Staff Performance and Chart */}
           <Grid item xs={12} md={6}>
             <ModernCard>
@@ -394,11 +408,9 @@ const StaffDashboard = () => {
 
           <Grid item xs={12}>
             <ModernCard>
-              <Typography
-                variant="h6"
-                gutterBottom
-                color="primary.main"
-              ></Typography>
+              <Typography variant="h6" gutterBottom color="primary.main">
+                Ticket History
+              </Typography>
               <Box sx={{ height: 400, overflowY: "auto" }}>
                 <TicketHistory tickets={userTicketHistory} />
               </Box>

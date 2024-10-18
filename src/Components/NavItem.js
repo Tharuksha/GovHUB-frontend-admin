@@ -3,7 +3,6 @@ import { Button, Icon } from "@mui/material";
 import { styled } from "@mui/system";
 import { useSpring, animated } from "react-spring";
 import { useLocation, Link } from "react-router-dom";
-import theme from "../theme/Theme";
 
 const AnimatedButton = animated(Button);
 
