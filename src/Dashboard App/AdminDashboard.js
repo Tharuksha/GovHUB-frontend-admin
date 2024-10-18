@@ -137,15 +137,12 @@ const AdminDashboard = () => {
         axios.get(
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/tickets/solvedAndPendingTickets"
         ),
-        axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements"
-        ),
         axios.post(
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/solvedTickets",
-          {
-            duration,
-            performance,
-          }
+          { duration, performance }
+        ),
+        axios.get(
+          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/"
         ),
       ]);
 
@@ -158,9 +155,6 @@ const AdminDashboard = () => {
       setCustomerCount(customerRes.data.count);
       setTopStaff(topStaffRes.data);
       setAnnouncements(announcementsRes.data);
-
-      // Simulating API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setIsLoading(false);
     } catch (error) {
@@ -189,7 +183,7 @@ const AdminDashboard = () => {
   const handleCreateAnnouncement = async () => {
     try {
       await axios.post(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements",
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/",
         {
           content: newAnnouncement,
           departmentID: "all", // Assuming this is for all departments
@@ -254,13 +248,13 @@ const AdminDashboard = () => {
     title: {
       text: "Solved Cases Over Time",
       left: "center",
-      top: 20, // Add some top padding
+      top: 20,
       textStyle: {
-        fontSize: 16, // Adjust font size if needed
+        fontSize: 16,
       },
     },
     grid: {
-      top: 60, // Increase top margin to make room for title
+      top: 60,
       bottom: 20,
       left: 20,
       right: 20,
@@ -286,7 +280,7 @@ const AdminDashboard = () => {
     ],
     legend: {
       data: ["Pending Tickets", "Solved Tickets"],
-      bottom: 0, // Move legend to bottom
+      bottom: 0,
     },
     tooltip: { trigger: "axis" },
   };
@@ -535,7 +529,7 @@ const AdminDashboard = () => {
             </ModernCard>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <ModernCard>
               <ReactECharts
                 option={departmentChartOptions}
@@ -580,6 +574,7 @@ const AdminDashboard = () => {
             </ModernCard>
           </Grid>
         </Grid>
+
         <Dialog
           open={openAnnouncementDialog}
           onClose={handleCloseAnnouncementDialog}
@@ -611,5 +606,4 @@ const AdminDashboard = () => {
     </ThemeProvider>
   );
 };
-
 export default AdminDashboard;
