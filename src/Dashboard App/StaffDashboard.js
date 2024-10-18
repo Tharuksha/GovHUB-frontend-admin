@@ -26,6 +26,7 @@ import {
 import RecentlySolvedTicketCard from "../Components/Dashboard/Staff/RecentlySolvedTicket";
 import TicketHistory from "../Components/Dashboard/Staff/TicketHistory";
 import StaffPerformanceChart from "../Components/Dashboard/Staff/StaffPerformanceChart";
+import DepartmentAnnouncements from "../Components/Dashboard/Staff/DepartmentAnnouncements";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 
@@ -230,6 +231,13 @@ const StaffDashboard = () => {
                   </Typography>
                 </Box>
               </CardContent>
+            </ModernCard>
+          </Grid>
+
+          {/* Department Announcements */}
+          <Grid item xs={12}>
+            <ModernCard>
+              <DepartmentAnnouncements user={user} />
             </ModernCard>
           </Grid>
 
