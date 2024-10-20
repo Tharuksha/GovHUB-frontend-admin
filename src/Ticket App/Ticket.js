@@ -348,7 +348,7 @@ const TicketApp = () => {
         </Tooltip>
         {user?.role !== "admin" &&
           user?.role !== "dhead" &&
-          row.original.status !== "Solved" &&
+          row.original.status !== "Approved" &&
           row.original.status !== "Rejected" && (
             <>
               <Tooltip title="Solve">

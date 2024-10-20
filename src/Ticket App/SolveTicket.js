@@ -127,7 +127,7 @@ const SolveTicket = () => {
         {
           ...ticket,
           feedback,
-          status: "Solved",
+          status: "Approved",
           staffID: user.id,
           closedDate: new Date().toISOString(),
         }
