@@ -169,11 +169,11 @@ const StaffDashboard = () => {
     const fetchRecentRejectedTickets = async () => {
       try {
         const response = await axios.get(
-          `https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/recentRejectedTickets/${user?.id}`
+          `https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets/recentRejected/${user?.id}`
         );
         setRecentRejectedTickets(response.data);
       } catch (error) {
-        console.error("Error fetching recent rejected tickets", error);
+        console.error("Error fetching recent rejected tickets:", error);
       }
     };
 
