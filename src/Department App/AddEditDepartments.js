@@ -28,6 +28,7 @@ import {
   ArrowBack,
   Cancel,
   Refresh,
+  Add as AddIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -60,6 +61,7 @@ const AddEditDepartments = () => {
     departmentHeadID: "",
     operatingHours: "",
   });
+  const [appointmentReasons, setAppointmentReasons] = useState([""]); // Added for appointment reasons
   const [isEdit, setIsEdit] = useState(false);
   const [staffMembers, setStaffMembers] = useState([]);
   const [previousHeadID, setPreviousHeadID] = useState(null);
@@ -88,6 +90,7 @@ const AddEditDepartments = () => {
       setDepartment(response.data);
       setIsEdit(true);
       setPreviousHeadID(response.data.departmentHeadID);
+      setAppointmentReasons(response.data.appointmentReasons || [""]);
     } catch (error) {
       console.error("Error fetching department details:", error);
       toast.error("Error fetching department details");
@@ -109,6 +112,28 @@ const AddEditDepartments = () => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setDepartment({ ...department, [name]: value });
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const handleAppointmentReasonChange = (index, value) => {
+    const updatedReasons = [...appointmentReasons];
+    updatedReasons[index] = value;
+    setAppointmentReasons(updatedReasons);
+  };
+
+  const addAppointmentReason = () => {
+    setAppointmentReasons([...appointmentReasons, ""]);
+  };
+
+  const removeAppointmentReason = (index) => {
+    const updatedReasons = [...appointmentReasons];
+    updatedReasons.splice(index, 1);
+    setAppointmentReasons(updatedReasons);
   };
 
   const validateInputs = () => {
@@ -136,16 +161,6 @@ const AddEditDepartments = () => {
     return Object.values(tempErrors).every((x) => x === "");
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setDepartment({ ...department, [name]: value });
-    setErrors({ ...errors, [name]: "" });
-  };
-
-  const handleDepartmentHeadChange = (event, newValue) => {
-    setDepartment({ ...department, departmentHeadID: newValue?._id || "" });
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateInputs()) {
@@ -154,46 +169,21 @@ const AddEditDepartments = () => {
     }
     setIsLoading(true);
     try {
+      const payload = {
+        ...department,
+        appointmentReasons, // Include appointment reasons in the payload
+      };
       if (isEdit) {
         await axios.put(
           `https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments/${id}`,
-          department
+          payload
         );
-        if (
-          department.departmentHeadID &&
-          department.departmentHeadID !== previousHeadID
-        ) {
-          if (previousHeadID) {
-            const departments = await axios.get(
-              "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments"
-            );
-            const isStillHead = departments.data.some(
-              (dep) => dep.departmentHeadID === previousHeadID
-            );
-            if (!isStillHead) {
-              await axios.put(
-                `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${previousHeadID}`,
-                { role: "staff" }
-              );
-            }
-          }
-          await axios.put(
-            `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${department.departmentHeadID}`,
-            { role: "dhead" }
-          );
-        }
         toast.success("Department updated successfully");
       } else {
         await axios.post(
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments",
-          department
+          payload
         );
-        if (department.departmentHeadID) {
-          await axios.put(
-            `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${department.departmentHeadID}`,
-            { role: "dhead" }
-          );
-        }
         toast.success("Department added successfully");
       }
       navigate("/department");
@@ -332,7 +322,12 @@ const AddEditDepartments = () => {
                   getOptionLabel={(option) =>
                     `${option.firstName} ${option.lastName}`
                   }
-                  onChange={handleDepartmentHeadChange}
+                  onChange={(event, newValue) =>
+                    setDepartment({
+                      ...department,
+                      departmentHeadID: newValue?._id || "",
+                    })
+                  }
                   value={
                     staffMembers.find(
                       (member) => member._id === department.departmentHeadID
@@ -377,6 +372,42 @@ const AddEditDepartments = () => {
                     shrink: true,
                   }}
                 />
+              </Grid>
+
+              {/* New Section for Appointment Reasons */}
+              <Grid item xs={12}>
+                <Typography variant="h6" gutterBottom>
+                  Appointment Reasons
+                </Typography>
+                {appointmentReasons.map((reason, index) => (
+                  <Box
+                    key={index}
+                    sx={{ display: "flex", alignItems: "center", mb: 2 }}
+                  >
+                    <TextField
+                      fullWidth
+                      label={`Reason ${index + 1}`}
+                      value={reason}
+                      onChange={(e) =>
+                        handleAppointmentReasonChange(index, e.target.value)
+                      }
+                      sx={{ mr: 2 }}
+                    />
+                    <IconButton
+                      color="secondary"
+                      onClick={() => removeAppointmentReason(index)}
+                    >
+                      <Cancel />
+                    </IconButton>
+                  </Box>
+                ))}
+                <Button
+                  variant="outlined"
+                  onClick={addAppointmentReason}
+                  startIcon={<AddIcon />}
+                >
+                  Add Reason
+                </Button>
               </Grid>
             </Grid>
             <Box
