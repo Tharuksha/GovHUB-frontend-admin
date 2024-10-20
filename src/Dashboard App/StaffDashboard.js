@@ -392,7 +392,7 @@ const StaffDashboard = () => {
                         color="success"
                         onClick={() => gotoSolve(ticket._id)}
                       >
-                        Solve
+                        Approve
                       </Button>
                       <Button
                         variant="outlined"
