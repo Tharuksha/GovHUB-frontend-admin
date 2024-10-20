@@ -18,6 +18,7 @@ import Login from "./Login APP/Login";
 import ViewTicket from "./Ticket App/ViewTicket";
 import SolveTicket from "./Ticket App/SolveTicket";
 import MessageCenter from "./Message App/MessageCenter"; // Import the new MessageCenter component
+import RejectTicket from "./Ticket App/RejectTicket";
 
 function App() {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("staff")));
@@ -51,8 +52,8 @@ function App() {
               <Route path="/viewTicket" element={<ViewTicket />} />
               <Route path="/editTicket" element={<AddEditTicket />} />
               <Route path="/solveTicket" element={<SolveTicket />} />
-              <Route path="/messages" element={<MessageCenter />} />{" "}
-              {/* New route for Message Center */}
+              <Route path="/messages" element={<MessageCenter />} />
+              <Route path="/rejectTicket" element={<RejectTicket />} />
             </Routes>
           </div>
         </main>

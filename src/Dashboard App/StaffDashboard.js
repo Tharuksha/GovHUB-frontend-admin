@@ -25,6 +25,7 @@ import {
   CalendarViewMonthRounded,
   Visibility as VisibilityIcon,
   CheckCircle as CheckCircleIcon,
+  Cancel as CancelIcon,
   AccessTime as AccessTimeIcon,
   Message as MessageIcon,
 } from "@mui/icons-material";
@@ -62,6 +63,7 @@ const StaffDashboard = () => {
   const [userTicketHistory, setUserTicketHistory] = useState([]);
   const [userPerformence, setUserPerformence] = useState([]);
   const [pendingTickets, setPendingTickets] = useState([]);
+  const [recentRejectedTickets, setRecentRejectedTickets] = useState([]);
   const [recentMessages, setRecentMessages] = useState([]);
 
   useEffect(() => {
@@ -164,6 +166,21 @@ const StaffDashboard = () => {
   }, [userDuration, pendingTickets, user?.departmentID]);
 
   useEffect(() => {
+    const fetchRecentRejectedTickets = async () => {
+      try {
+        const response = await axios.get(
+          `https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/recentRejectedTickets/${user?.id}`
+        );
+        setRecentRejectedTickets(response.data);
+      } catch (error) {
+        console.error("Error fetching recent rejected tickets", error);
+      }
+    };
+
+    fetchRecentRejectedTickets();
+  }, [user?.id]);
+
+  useEffect(() => {
     fetchRecentMessages();
   }, []);
 
@@ -194,6 +211,11 @@ const StaffDashboard = () => {
   const gotoSolve = (id) => {
     localStorage.setItem("ticketId", id);
     navigate("/solveTicket");
+  };
+
+  const gotoReject = (id) => {
+    localStorage.setItem("ticketId", id);
+    navigate("/rejectTicket");
   };
 
   return (
@@ -374,6 +396,14 @@ const StaffDashboard = () => {
                       </Button>
                       <Button
                         variant="outlined"
+                        startIcon={<CancelIcon />}
+                        color="error"
+                        onClick={() => gotoReject(ticket._id)}
+                      >
+                        Reject
+                      </Button>
+                      <Button
+                        variant="outlined"
                         startIcon={<VisibilityIcon />}
                         color="primary"
                         onClick={() => gotoView(ticket._id)}
@@ -483,6 +513,66 @@ const StaffDashboard = () => {
                 Recent Solved Tickets
               </Typography>
               <RecentlySolvedTicketCard ticket={recentSolvedTickets} />
+            </ModernCard>
+          </Grid>
+
+          {/* New section for Recent Rejected Tickets */}
+          <Grid item xs={12}>
+            <ModernCard>
+              <Typography variant="h6" gutterBottom color="error.main">
+                Recent Rejected Tickets
+              </Typography>
+              {recentRejectedTickets.length > 0 ? (
+                recentRejectedTickets.map((ticket, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 2,
+                      p: 2,
+                      bgcolor: "background.paper",
+                      borderRadius: 2,
+                      boxShadow: "0 2px 10px rgba(0, 0, 0, 0.05)",
+                    }}
+                  >
+                    <Box sx={{ display: "flex", alignItems: "center" }}>
+                      <Avatar sx={{ bgcolor: "error.main", mr: 2 }}>
+                        {ticket.issueDescription[0]}
+                      </Avatar>
+                      <Box>
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="error.main"
+                        >
+                          {ticket.issueDescription}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Rejected on:{" "}
+                          {moment(ticket.closedDate).format("MMMM D, YYYY")}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          Reason: {ticket.rejectionReason}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Button
+                      variant="outlined"
+                      startIcon={<VisibilityIcon />}
+                      color="primary"
+                      onClick={() => gotoView(ticket._id)}
+                    >
+                      View
+                    </Button>
+                  </Box>
+                ))
+              ) : (
+                <Typography variant="body1" align="center">
+                  No recent rejected tickets to display
+                </Typography>
+              )}
             </ModernCard>
           </Grid>
 

@@ -25,6 +25,7 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
 import { createTheme } from "@mui/material/styles";
@@ -130,6 +131,8 @@ const StyledChip = styled(Chip)(({ theme, status }) => ({
       ? theme.palette.success.main
       : status === "Pending"
       ? theme.palette.warning.main
+      : status === "Rejected"
+      ? theme.palette.error.main
       : theme.palette.info.main,
 }));
 
@@ -212,6 +215,11 @@ const TicketApp = () => {
   const gotoSolve = (id) => {
     localStorage.setItem("ticketId", id);
     navigate("/solveTicket");
+  };
+
+  const gotoReject = (id) => {
+    localStorage.setItem("ticketId", id);
+    navigate("/rejectTicket");
   };
 
   const deleteTicket = (id) => {
@@ -340,15 +348,26 @@ const TicketApp = () => {
         </Tooltip>
         {user?.role !== "admin" &&
           user?.role !== "dhead" &&
-          row.original.status !== "Solved" && (
-            <Tooltip title="Solve">
-              <IconButton
-                color="success"
-                onClick={() => gotoSolve(row.original._id)}
-              >
-                <CheckCircleIcon />
-              </IconButton>
-            </Tooltip>
+          row.original.status !== "Solved" &&
+          row.original.status !== "Rejected" && (
+            <>
+              <Tooltip title="Solve">
+                <IconButton
+                  color="success"
+                  onClick={() => gotoSolve(row.original._id)}
+                >
+                  <CheckCircleIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Reject">
+                <IconButton
+                  color="error"
+                  onClick={() => gotoReject(row.original._id)}
+                >
+                  <CancelIcon />
+                </IconButton>
+              </Tooltip>
+            </>
           )}
         {user?.role === "admin" && (
           <Tooltip title="Delete">

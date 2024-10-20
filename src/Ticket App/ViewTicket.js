@@ -25,6 +25,7 @@ import {
   Edit,
   Print,
   Refresh,
+  Cancel,
 } from "@mui/icons-material";
 import axios from "axios";
 import theme from "../theme/Theme";
@@ -101,7 +102,19 @@ const ViewTicket = () => {
 
   useEffect(() => {
     fetchTicketData();
+    return () => {
+      localStorage.removeItem("ticketId");
+    };
   }, [id]);
+
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleEdit = () => {
+    localStorage.setItem("editId", id);
+    navigate("/editTicket");
+  };
 
   const generatePDF = () => {
     const doc = new jsPDF();
@@ -120,7 +133,15 @@ const ViewTicket = () => {
     doc.text(`Created Date: ${ticket.createdDate}`, 14, 90);
     doc.text(`Closed Date: ${ticket.closedDate || "N/A"}`, 14, 100);
     doc.text(`Notes: ${ticket.notes}`, 14, 110);
-    doc.text(`Feedback: ${ticket.feedback}`, 14, 120);
+    doc.text(`Feedback: ${ticket.feedback || "N/A"}`, 14, 120);
+
+    if (ticket.status === "Rejected") {
+      doc.text(
+        `Rejection Reason: ${ticket.rejectionReason || "No reason provided"}`,
+        14,
+        130
+      );
+    }
 
     doc.autoTable({
       head: [["Department", "Customer"]],
@@ -137,14 +158,10 @@ const ViewTicket = () => {
           customer.dateOfBirth ? customer.dateOfBirth.toString() : "N/A",
         ],
       ],
-      startY: 130,
+      startY: 140,
     });
 
     doc.save("ticket-report.pdf");
-  };
-
-  const gotoEdit = () => {
-    navigate("/editTicket");
   };
 
   return (
@@ -211,12 +228,16 @@ const ViewTicket = () => {
                 <InfoItem
                   icon={<EventNote />}
                   label="Created Date"
-                  value={ticket.createdDate}
+                  value={new Date(ticket.createdDate).toLocaleString()}
                 />
                 <InfoItem
                   icon={<EventNote />}
                   label="Closed Date"
-                  value={ticket.closedDate || "N/A"}
+                  value={
+                    ticket.closedDate
+                      ? new Date(ticket.closedDate).toLocaleString()
+                      : "N/A"
+                  }
                 />
                 <InfoItem
                   icon={<Assignment />}
@@ -226,7 +247,7 @@ const ViewTicket = () => {
                 <InfoItem
                   icon={<Feedback />}
                   label="Feedback"
-                  value={ticket.feedback}
+                  value={ticket.feedback || "N/A"}
                 />
               </ModernCard>
             </Grid>
@@ -252,6 +273,20 @@ const ViewTicket = () => {
                 />
               </ModernCard>
             </Grid>
+            {ticket.status === "Rejected" && (
+              <Grid item xs={12}>
+                <ModernCard>
+                  <Typography variant="h6" color="error" gutterBottom>
+                    Rejection Information
+                  </Typography>
+                  <InfoItem
+                    icon={<Cancel />}
+                    label="Rejection Reason"
+                    value={ticket.rejectionReason || "No reason provided"}
+                  />
+                </ModernCard>
+              </Grid>
+            )}
             <Grid item xs={12}>
               <ModernCard>
                 <Box
@@ -264,7 +299,7 @@ const ViewTicket = () => {
                 >
                   <Button
                     color="primary"
-                    onClick={() => navigate(-1)}
+                    onClick={handleBack}
                     startIcon={<ArrowBack />}
                   >
                     Back
@@ -272,7 +307,7 @@ const ViewTicket = () => {
                   <Button
                     color="primary"
                     variant="contained"
-                    onClick={gotoEdit}
+                    onClick={handleEdit}
                     startIcon={<Edit />}
                   >
                     Edit
