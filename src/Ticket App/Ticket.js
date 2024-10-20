@@ -10,11 +10,6 @@ import {
   Tooltip,
   LinearProgress,
   Grid,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
   Chip,
 } from "@mui/material";
 import { styled } from "@mui/system";
@@ -30,10 +25,9 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import CancelIcon from "@mui/icons-material/Cancel";
 import { jsPDF } from "jspdf";
 import autoTable from "jspdf-autotable";
-import theme from "../theme/TableTheme";
+import { createTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
@@ -41,6 +35,78 @@ import "react-toastify/dist/ReactToastify.css";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
 import dayjs from "dayjs";
+
+// Custom theme for the table
+const tableTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#1976d2",
+    },
+    secondary: {
+      main: "#dc004e",
+    },
+    background: {
+      default: "#f5f5f5",
+    },
+  },
+  components: {
+    MuiPaper: {
+      styleOverrides: {
+        root: {
+          boxShadow: "0px 3px 15px rgba(0,0,0,0.2)",
+          borderRadius: "10px",
+        },
+      },
+    },
+    MuiTableHead: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "#f0f7ff",
+          "& .MuiTableCell-head": {
+            color: "#1976d2",
+            fontWeight: "bold",
+          },
+        },
+      },
+    },
+    MuiTableBody: {
+      styleOverrides: {
+        root: {
+          "& .MuiTableRow-root": {
+            "&:nth-of-type(odd)": {
+              backgroundColor: "#fafafa",
+            },
+            "&:hover": {
+              backgroundColor: "#f0f7ff",
+            },
+          },
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          padding: "16px",
+        },
+      },
+    },
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          textTransform: "none",
+          borderRadius: "8px",
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          borderRadius: "6px",
+        },
+      },
+    },
+  },
+});
 
 const AnimatedTypography = animated(Typography);
 
@@ -64,20 +130,14 @@ const StyledChip = styled(Chip)(({ theme, status }) => ({
       ? theme.palette.success.main
       : status === "Pending"
       ? theme.palette.warning.main
-      : status === "Rejected"
-      ? theme.palette.error.main
       : theme.palette.info.main,
 }));
 
 const TicketApp = () => {
+  const user = JSON.parse(localStorage.getItem("staff"));
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const [userRole, setUserRole] = useState("");
-  const [userDepartment, setUserDepartment] = useState("");
-  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
-  const [rejectReason, setRejectReason] = useState("");
-  const [selectedTicketId, setSelectedTicketId] = useState(null);
 
   const fadeIn = useSpring({
     from: { opacity: 0, transform: "translateY(20px)" },
@@ -85,28 +145,35 @@ const TicketApp = () => {
     config: config.gentle,
   });
 
-  useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("staff"));
-    if (user) {
-      setUserRole(user.role);
-      setUserDepartment(user.departmentID);
-    }
-    fetchData();
-  }, []);
-
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
+      const ticketsResponse = await axios.get(
         "https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets"
       );
-      let ticketsData = response.data;
-      if (userRole !== "admin") {
+      const departmentsResponse = await axios.get(
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments"
+      );
+
+      const departments = departmentsResponse.data.reduce((acc, dept) => {
+        acc[dept._id] = dept.departmentName;
+        return acc;
+      }, {});
+
+      let ticketsData = ticketsResponse.data;
+      if (user?.role !== "admin") {
         ticketsData = ticketsData.filter(
-          (item) => item.departmentID === userDepartment
+          (item) => item.departmentID === user?.departmentID
         );
       }
-      setData(ticketsData);
+
+      const enhancedTicketsData = ticketsData.map((ticket) => ({
+        ...ticket,
+        departmentName:
+          departments[ticket.departmentID] || "Unknown Department",
+      }));
+
+      setData(enhancedTicketsData);
     } catch (error) {
       toast.error("Error fetching tickets.");
       console.error("Error fetching tickets:", error);
@@ -114,6 +181,10 @@ const TicketApp = () => {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, [user?.role, user?.departmentID]);
 
   const handleExportRows = (rows) => {
     const doc = new jsPDF();
@@ -143,43 +214,8 @@ const TicketApp = () => {
     navigate("/solveTicket");
   };
 
-  const handleReject = (id) => {
-    setSelectedTicketId(id);
-    setRejectDialogOpen(true);
-  };
-
-  const handleRejectClose = () => {
-    setRejectDialogOpen(false);
-    setRejectReason("");
-    setSelectedTicketId(null);
-  };
-
-  const handleRejectSubmit = async () => {
-    if (!rejectReason.trim()) {
-      toast.error("Please provide a reason for rejection");
-      return;
-    }
-    setIsLoading(true);
-    try {
-      await axios.put(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets/${selectedTicketId}/reject`,
-        {
-          rejectionReason: rejectReason,
-        }
-      );
-      toast.success("Ticket rejected successfully");
-      handleRejectClose();
-      fetchData(); // Refresh the ticket list
-    } catch (error) {
-      console.error("Error rejecting ticket:", error);
-      toast.error("Failed to reject ticket");
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const deleteTicket = (id) => {
-    if (userRole !== "admin") {
+    if (user?.role !== "admin") {
       toast.error("Only administrators can delete tickets.");
       return;
     }
@@ -242,7 +278,7 @@ const TicketApp = () => {
         </Typography>
       ),
     }),
-    columnHelper.accessor("departmentID", {
+    columnHelper.accessor("departmentName", {
       header: "Department",
       size: 150,
       Cell: ({ cell }) => (
@@ -285,7 +321,6 @@ const TicketApp = () => {
     enableSorting: true,
     enableBottomToolbar: true,
     enableTopToolbar: true,
-    muiTableBodyRowProps: { hover: true },
     enableRowActions: true,
     positionActionsColumn: "last",
     renderRowActions: ({ row }) => (
@@ -303,29 +338,19 @@ const TicketApp = () => {
             <EditIcon />
           </IconButton>
         </Tooltip>
-        {userRole !== "admin" &&
-          userRole !== "dhead" &&
-          row.original.status === "Pending" && (
-            <>
-              <Tooltip title="Solve">
-                <IconButton
-                  color="success"
-                  onClick={() => gotoSolve(row.original._id)}
-                >
-                  <CheckCircleIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Reject">
-                <IconButton
-                  color="error"
-                  onClick={() => handleReject(row.original._id)}
-                >
-                  <CancelIcon />
-                </IconButton>
-              </Tooltip>
-            </>
+        {user?.role !== "admin" &&
+          user?.role !== "dhead" &&
+          row.original.status !== "Solved" && (
+            <Tooltip title="Solve">
+              <IconButton
+                color="success"
+                onClick={() => gotoSolve(row.original._id)}
+              >
+                <CheckCircleIcon />
+              </IconButton>
+            </Tooltip>
           )}
-        {userRole === "admin" && (
+        {user?.role === "admin" && (
           <Tooltip title="Delete">
             <IconButton
               color="error"
@@ -377,7 +402,7 @@ const TicketApp = () => {
   });
 
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={tableTheme}>
       <CssBaseline />
       <Box
         sx={{
@@ -422,33 +447,6 @@ const TicketApp = () => {
             </ModernCard>
           </Grid>
         </Grid>
-
-        {/* Reject Ticket Dialog */}
-        <Dialog open={rejectDialogOpen} onClose={handleRejectClose}>
-          <DialogTitle>Reject Ticket</DialogTitle>
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="reject-reason"
-              label="Reason for Rejection"
-              type="text"
-              fullWidth
-              multiline
-              rows={4}
-              value={rejectReason}
-              onChange={(e) => setRejectReason(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleRejectClose} color="primary">
-              Cancel
-            </Button>
-            <Button onClick={handleRejectSubmit} color="primary">
-              Submit
-            </Button>
-          </DialogActions>
-        </Dialog>
       </Box>
       <ToastContainer position="bottom-right" />
     </ThemeProvider>
