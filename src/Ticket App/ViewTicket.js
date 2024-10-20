@@ -25,6 +25,10 @@ import {
   Edit,
   Print,
   Refresh,
+  Cancel,
+  Person,
+  Email,
+  Phone,
 } from "@mui/icons-material";
 import axios from "axios";
 import theme from "../theme/Theme";
@@ -120,7 +124,10 @@ const ViewTicket = () => {
     doc.text(`Created Date: ${ticket.createdDate}`, 14, 90);
     doc.text(`Closed Date: ${ticket.closedDate || "N/A"}`, 14, 100);
     doc.text(`Notes: ${ticket.notes}`, 14, 110);
-    doc.text(`Feedback: ${ticket.feedback}`, 14, 120);
+    doc.text(`Feedback: ${ticket.feedback || "N/A"}`, 14, 120);
+    if (ticket.status === "Rejected") {
+      doc.text(`Rejection Reason: ${ticket.rejectionReason}`, 14, 130);
+    }
 
     doc.autoTable({
       head: [["Department", "Customer"]],
@@ -137,14 +144,18 @@ const ViewTicket = () => {
           customer.dateOfBirth ? customer.dateOfBirth.toString() : "N/A",
         ],
       ],
-      startY: 130,
+      startY: ticket.status === "Rejected" ? 140 : 130,
     });
 
     doc.save("ticket-report.pdf");
   };
 
-  const gotoEdit = () => {
-    navigate("/editTicket");
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleEdit = () => {
+    navigate(`/editTicket/${id}`);
   };
 
   return (
@@ -211,23 +222,43 @@ const ViewTicket = () => {
                 <InfoItem
                   icon={<EventNote />}
                   label="Created Date"
-                  value={ticket.createdDate}
+                  value={new Date(ticket.createdDate).toLocaleString()}
+                />
+                <InfoItem
+                  icon={<EventNote />}
+                  label="Appointment Date"
+                  value={
+                    ticket.appointmentDate
+                      ? new Date(ticket.appointmentDate).toLocaleString()
+                      : "N/A"
+                  }
                 />
                 <InfoItem
                   icon={<EventNote />}
                   label="Closed Date"
-                  value={ticket.closedDate || "N/A"}
+                  value={
+                    ticket.closedDate
+                      ? new Date(ticket.closedDate).toLocaleString()
+                      : "N/A"
+                  }
                 />
                 <InfoItem
                   icon={<Assignment />}
                   label="Notes"
-                  value={ticket.notes}
+                  value={ticket.notes || "N/A"}
                 />
                 <InfoItem
                   icon={<Feedback />}
                   label="Feedback"
-                  value={ticket.feedback}
+                  value={ticket.feedback || "N/A"}
                 />
+                {ticket.status === "Rejected" && (
+                  <InfoItem
+                    icon={<Cancel />}
+                    label="Rejection Reason"
+                    value={ticket.rejectionReason}
+                  />
+                )}
               </ModernCard>
             </Grid>
             <Grid item xs={12} md={6}>
@@ -241,14 +272,42 @@ const ViewTicket = () => {
                   value={customer._id}
                 />
                 <InfoItem
-                  icon={<AccountCircle />}
+                  icon={<Person />}
                   label="Customer Name"
                   value={`${customer.firstName} ${customer.lastName}`}
                 />
                 <InfoItem
+                  icon={<Email />}
+                  label="Email"
+                  value={customer.emailAddress}
+                />
+                <InfoItem
+                  icon={<Phone />}
+                  label="Phone"
+                  value={customer.phoneNumber}
+                />
+                <Typography
+                  variant="h6"
+                  color="primary"
+                  gutterBottom
+                  sx={{ mt: 3 }}
+                >
+                  Department Information
+                </Typography>
+                <InfoItem
                   icon={<Work />}
                   label="Department"
                   value={department.departmentName}
+                />
+                <InfoItem
+                  icon={<Email />}
+                  label="Department Email"
+                  value={department.emailAddress}
+                />
+                <InfoItem
+                  icon={<Phone />}
+                  label="Department Phone"
+                  value={department.phoneNumber}
                 />
               </ModernCard>
             </Grid>
@@ -264,7 +323,7 @@ const ViewTicket = () => {
                 >
                   <Button
                     color="primary"
-                    onClick={() => navigate(-1)}
+                    onClick={handleBack}
                     startIcon={<ArrowBack />}
                   >
                     Back
@@ -272,7 +331,7 @@ const ViewTicket = () => {
                   <Button
                     color="primary"
                     variant="contained"
-                    onClick={gotoEdit}
+                    onClick={handleEdit}
                     startIcon={<Edit />}
                   >
                     Edit

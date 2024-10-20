@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   MenuItem,
@@ -10,12 +11,12 @@ import {
   Typography,
   ThemeProvider,
   CssBaseline,
-  Button,
   Stack,
-  List,
-  ListItem,
-  ListItemText,
-  Divider,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import { styled } from "@mui/system";
 import { useSpring, animated } from "react-spring";
@@ -26,7 +27,7 @@ import {
   Visibility as VisibilityIcon,
   CheckCircle as CheckCircleIcon,
   AccessTime as AccessTimeIcon,
-  Message as MessageIcon,
+  Cancel as CancelIcon,
 } from "@mui/icons-material";
 import RecentlySolvedTicketCard from "../Components/Dashboard/Staff/RecentlySolvedTicket";
 import TicketHistory from "../Components/Dashboard/Staff/TicketHistory";
@@ -34,6 +35,8 @@ import StaffPerformanceChart from "../Components/Dashboard/Staff/StaffPerformanc
 import DepartmentAnnouncements from "../Components/Dashboard/Staff/DepartmentAnnouncements";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AnimatedCard = animated(Card);
 
@@ -60,9 +63,11 @@ const StaffDashboard = () => {
   const [performance, setPerformance] = useState("best");
   const [recentSolvedTickets, setRecentSolvedTickets] = useState([]);
   const [userTicketHistory, setUserTicketHistory] = useState([]);
-  const [userPerformence, setUserPerformence] = useState([]);
+  const [userPerformance, setUserPerformance] = useState([]);
   const [pendingTickets, setPendingTickets] = useState([]);
-  const [recentMessages, setRecentMessages] = useState([]);
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState("");
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
 
   useEffect(() => {
     const fetchSolvedAndPendingTickets = async () => {
@@ -71,7 +76,7 @@ const StaffDashboard = () => {
           "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/performance",
           { staffID: user?.id }
         );
-        setUserPerformence(response.data[user?.id]);
+        setUserPerformance(response.data[user?.id]);
       } catch (error) {
         console.error("Error fetching solved and pending tickets", error);
       }
@@ -144,37 +149,21 @@ const StaffDashboard = () => {
   }, [user?.id, userDuration]);
 
   useEffect(() => {
-    const getPendingTickets = async () => {
-      try {
-        const res = await axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets"
-        );
-        let ticketList = res.data.filter(
-          (item) =>
-            item.status === "Pending" &&
-            item.departmentID === user?.departmentID
-        );
-        setPendingTickets(ticketList);
-      } catch (error) {
-        console.error("Error fetching data", error);
-      }
-    };
+    fetchPendingTickets();
+  }, [user?.departmentID]);
 
-    getPendingTickets();
-  }, [userDuration, pendingTickets, user?.departmentID]);
-
-  useEffect(() => {
-    fetchRecentMessages();
-  }, []);
-
-  const fetchRecentMessages = async () => {
+  const fetchPendingTickets = async () => {
     try {
-      const response = await axios.get(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/messages/recent"
+      const res = await axios.get(
+        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets"
       );
-      setRecentMessages(response.data);
+      let ticketList = res.data.filter(
+        (item) =>
+          item.status === "Pending" && item.departmentID === user?.departmentID
+      );
+      setPendingTickets(ticketList);
     } catch (error) {
-      console.error("Error fetching recent messages:", error);
+      console.error("Error fetching pending tickets", error);
     }
   };
 
@@ -194,6 +183,38 @@ const StaffDashboard = () => {
   const gotoSolve = (id) => {
     localStorage.setItem("ticketId", id);
     navigate("/solveTicket");
+  };
+
+  const handleReject = (id) => {
+    setSelectedTicketId(id);
+    setRejectDialogOpen(true);
+  };
+
+  const handleRejectClose = () => {
+    setRejectDialogOpen(false);
+    setRejectReason("");
+    setSelectedTicketId(null);
+  };
+
+  const handleRejectSubmit = async () => {
+    if (!rejectReason.trim()) {
+      toast.error("Please provide a reason for rejection");
+      return;
+    }
+    try {
+      await axios.put(
+        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets/${selectedTicketId}/reject`,
+        {
+          rejectionReason: rejectReason,
+        }
+      );
+      toast.success("Ticket rejected successfully");
+      handleRejectClose();
+      fetchPendingTickets(); // Refresh the pending tickets list
+    } catch (error) {
+      console.error("Error rejecting ticket:", error);
+      toast.error("Failed to reject ticket");
+    }
   };
 
   return (
@@ -256,60 +277,9 @@ const StaffDashboard = () => {
           </Grid>
 
           {/* Department Announcements */}
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12}>
             <ModernCard>
               <DepartmentAnnouncements user={user} />
-            </ModernCard>
-          </Grid>
-
-          {/* Recent Messages */}
-          <Grid item xs={12} md={6}>
-            <ModernCard>
-              <Box
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                mb={2}
-              >
-                <Typography variant="h6" gutterBottom color="primary.main">
-                  Recent Messages
-                </Typography>
-                <Button
-                  variant="outlined"
-                  startIcon={<MessageIcon />}
-                  onClick={() => navigate("/messages")}
-                >
-                  View All Messages
-                </Button>
-              </Box>
-              <List>
-                {recentMessages.slice(0, 5).map((message, index) => (
-                  <React.Fragment key={index}>
-                    <ListItem alignItems="flex-start">
-                      <ListItemText
-                        primary={`From: ${message.senderName} (${message.senderDepartment})`}
-                        secondary={
-                          <>
-                            <Typography
-                              component="span"
-                              variant="body2"
-                              color="text.primary"
-                            >
-                              {message.content.length > 50
-                                ? `${message.content.substring(0, 50)}...`
-                                : message.content}
-                            </Typography>
-                            {` — ${moment(message.timestamp).fromNow()}`}
-                          </>
-                        }
-                      />
-                    </ListItem>
-                    {index < recentMessages.length - 1 && (
-                      <Divider component="li" />
-                    )}
-                  </React.Fragment>
-                ))}
-              </List>
             </ModernCard>
           </Grid>
 
@@ -371,6 +341,14 @@ const StaffDashboard = () => {
                         onClick={() => gotoSolve(ticket._id)}
                       >
                         Solve
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        startIcon={<CancelIcon />}
+                        color="error"
+                        onClick={() => handleReject(ticket._id)}
+                      >
+                        Reject
                       </Button>
                       <Button
                         variant="outlined"
@@ -468,7 +446,7 @@ const StaffDashboard = () => {
               </Typography>
               <Box sx={{ height: 300, width: "100%", padding: 2 }}>
                 <StaffPerformanceChart
-                  performanceData={userPerformence}
+                  performanceData={userPerformance}
                   chartHeight={250}
                   chartWidth="100%"
                 />
@@ -497,7 +475,35 @@ const StaffDashboard = () => {
             </ModernCard>
           </Grid>
         </Grid>
+
+        {/* Reject Ticket Dialog */}
+        <Dialog open={rejectDialogOpen} onClose={handleRejectClose}>
+          <DialogTitle>Reject Ticket</DialogTitle>
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="reject-reason"
+              label="Reason for Rejection"
+              type="text"
+              fullWidth
+              multiline
+              rows={4}
+              value={rejectReason}
+              onChange={(e) => setRejectReason(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleRejectClose} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={handleRejectSubmit} color="primary">
+              Submit
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
+      <ToastContainer />
     </ThemeProvider>
   );
 };
