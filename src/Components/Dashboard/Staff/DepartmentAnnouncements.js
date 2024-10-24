@@ -12,67 +12,105 @@ import {
   DialogActions,
   IconButton,
   Tooltip,
+  Alert,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import axios from "axios";
-import moment from "moment";
 
 const DepartmentAnnouncements = ({ user }) => {
   const [announcements, setAnnouncements] = useState([]);
   const [newAnnouncement, setNewAnnouncement] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchAnnouncements();
-  }, []);
+    if (user?.departmentID) {
+      fetchAnnouncements();
+    }
+  }, [user?.departmentID]);
 
   const fetchAnnouncements = async () => {
     try {
-      const response = await axios.get(
+      const response = await fetch(
         `https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/${user.departmentID}`
       );
-      setAnnouncements(response.data);
+      if (!response.ok) throw new Error("Failed to fetch announcements");
+      const data = await response.json();
+      setAnnouncements(data);
+      setError(null);
     } catch (error) {
+      setError("Error fetching announcements. Please try again later.");
       console.error("Error fetching announcements", error);
     }
   };
 
   const handlePostAnnouncement = async () => {
     try {
-      await axios.post(
+      const response = await fetch(
         "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements",
         {
-          departmentID: user.departmentID,
-          content: newAnnouncement,
-          postedBy: user.id,
-          userRole: user.role, // Add this line
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            departmentID: user.departmentID,
+            content: newAnnouncement,
+            postedBy: user.id,
+            userRole: user.role,
+          }),
         }
       );
+
+      if (!response.ok) throw new Error("Failed to post announcement");
+
       setNewAnnouncement("");
       setIsDialogOpen(false);
       fetchAnnouncements();
+      setError(null);
     } catch (error) {
+      setError("Error posting announcement. Please try again later.");
       console.error("Error posting announcement", error);
     }
   };
 
   const handleDeleteAnnouncement = async (id) => {
     try {
-      await axios.delete(
+      const response = await fetch(
         `https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/${id}`,
         {
-          data: {
-            // Use 'data' for sending body with DELETE request
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             userRole: user.role,
             departmentID: user.departmentID,
-          },
+          }),
         }
       );
+
+      if (!response.ok) throw new Error("Failed to delete announcement");
+
       fetchAnnouncements();
+      setError(null);
     } catch (error) {
+      setError("Error deleting announcement. Please try again later.");
       console.error("Error deleting announcement", error);
     }
   };
+
+  // If user is not provided, show an error message
+  if (!user) {
+    return (
+      <Box sx={{ p: 2 }}>
+        <Alert severity="error">
+          <Typography variant="subtitle1">
+            Unable to load announcements. User information is missing.
+          </Typography>
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ width: "100%", p: 0 }}>
@@ -116,6 +154,13 @@ const DepartmentAnnouncements = ({ user }) => {
         )}
       </Box>
 
+      {/* Error Alert */}
+      {error && (
+        <Box sx={{ px: 2, mb: 2 }}>
+          <Alert severity="error">{error}</Alert>
+        </Box>
+      )}
+
       {/* Announcements List */}
       <Box sx={{ px: 2 }}>
         {announcements.length === 0 ? (
@@ -137,6 +182,7 @@ const DepartmentAnnouncements = ({ user }) => {
                 "&:hover": {
                   boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
                 },
+                transition: "box-shadow 0.3s ease-in-out",
               }}
             >
               <CardContent>
@@ -171,7 +217,7 @@ const DepartmentAnnouncements = ({ user }) => {
                   }}
                 >
                   Posted by: {announcement.postedBy.name} |{" "}
-                  {moment(announcement.createdAt).format("MMMM D, YYYY h:mm A")}
+                  {new Date(announcement.createdAt).toLocaleString()}
                 </Typography>
               </CardContent>
             </Card>
