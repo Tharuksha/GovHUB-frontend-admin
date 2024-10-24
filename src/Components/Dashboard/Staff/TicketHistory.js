@@ -49,6 +49,19 @@ const StyledButton = styled(Button)(({ theme }) => ({
   boxShadow: "none",
 }));
 
+const getStatusColor = (status) => {
+  switch (status) {
+    case "Approved":
+      return "success";
+    case "Pending":
+      return "warning";
+    case "Rejected":
+      return "error";
+    default:
+      return "default";
+  }
+};
+
 const TicketHistory = ({ tickets: allTickets }) => {
   const [openDialog, setOpenDialog] = useState(false);
   const [selectedCustomerID, setSelectedCustomerID] = useState("");
@@ -109,12 +122,22 @@ const TicketHistory = ({ tickets: allTickets }) => {
   };
 
   const handleCustomerClick = (customerID) => {
-    setSelectedCustomerID(customerID);
+    setSelectedCustomerID(customerID._id);
     setOpenDialog(true);
   };
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   };
 
   return (
@@ -141,11 +164,13 @@ const TicketHistory = ({ tickets: allTickets }) => {
         }
       >
         {displayedTickets.map((ticket, index) => (
-          <ModernCard key={index} style={fadeIn}>
+          <ModernCard key={ticket._id || index} style={fadeIn}>
             <CardContent>
               <Grid container spacing={2} alignItems="center">
                 <Grid item>
-                  <StyledAvatar>{ticket.issueDescription[0]}</StyledAvatar>
+                  <StyledAvatar>
+                    {ticket.customerID?.firstName?.[0] || "T"}
+                  </StyledAvatar>
                 </Grid>
                 <Grid item xs>
                   <Typography
@@ -155,30 +180,40 @@ const TicketHistory = ({ tickets: allTickets }) => {
                     {ticket.issueDescription}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Ticket ID: {ticket._id}
+                    Department: {ticket.departmentID?.departmentName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Appointment:{" "}
-                    {new Date(ticket.appointmentDate).toLocaleString()}
+                    Customer: {ticket.customerID?.firstName}{" "}
+                    {ticket.customerID?.lastName}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Description: {ticket.feedback}
+                    Appointment: {formatDate(ticket.appointmentDate)}
                   </Typography>
+                  {ticket.notes && (
+                    <Typography variant="body2" color="text.secondary">
+                      Notes: {ticket.notes}
+                    </Typography>
+                  )}
+                  {ticket.feedback && (
+                    <Typography variant="body2" color="text.secondary">
+                      Feedback: {ticket.feedback}
+                    </Typography>
+                  )}
                   <StyledButton
                     variant="text"
                     startIcon={<PersonIcon />}
                     onClick={() => handleCustomerClick(ticket.customerID)}
                     sx={{ mt: 1 }}
                   >
-                    Customer ID: {ticket.customerID}
+                    View Customer Details
                   </StyledButton>
                 </Grid>
                 <Grid item>
                   <Stack direction="column" spacing={1}>
                     <Chip
                       icon={<CheckCircleIcon />}
-                      label="Solved"
-                      color="success"
+                      label={ticket.status}
+                      color={getStatusColor(ticket.status)}
                       variant="outlined"
                     />
                     <StyledButton
