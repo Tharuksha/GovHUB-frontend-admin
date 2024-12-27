@@ -99,7 +99,7 @@ const AddEditStaff = () => {
     setIsLoading(true);
     try {
       const res = await axios.get(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${staffId}`
+        `https://govhub-backend.onrender.com/api/staff/${staffId}`
       );
       setStaff({
         ...res.data,
@@ -117,7 +117,7 @@ const AddEditStaff = () => {
     setIsLoading(true);
     try {
       const res = await axios.get(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments"
+        "https://govhub-backend.onrender.com/api/departments"
       );
       setDepartments(res.data);
     } catch (error) {
@@ -177,13 +177,13 @@ const AddEditStaff = () => {
     try {
       if (isEdit) {
         await axios.put(
-          `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${id}`,
+          `https://govhub-backend.onrender.com/api/staff/${id}`,
           staff
         );
         toast.success("Staff updated successfully");
       } else {
         await axios.post(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff",
+          "https://govhub-backend.onrender.com/api/staff",
           staff
         );
         toast.success("Staff added successfully");

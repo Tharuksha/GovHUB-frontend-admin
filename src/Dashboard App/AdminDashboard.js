@@ -109,28 +109,28 @@ const AdminDashboard = () => {
         topStaffRes,
       ] = await Promise.all([
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/departments/count"
+          "https://govhub-backend.onrender.com/api/dashboard/departments/count"
         ),
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/tickets/solved/count"
+          "https://govhub-backend.onrender.com/api/dashboard/tickets/solved/count"
         ),
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/count"
+          "https://govhub-backend.onrender.com/api/dashboard/staff/count"
         ),
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/customers/count"
+          "https://govhub-backend.onrender.com/api/dashboard/customers/count"
         ),
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/departments/solvedTickets"
+          "https://govhub-backend.onrender.com/api/dashboard/departments/solvedTickets"
         ),
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/tickets/solvedTickets"
+          "https://govhub-backend.onrender.com/api/dashboard/tickets/solvedTickets"
         ),
         axios.get(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/tickets/solvedAndPendingTickets"
+          "https://govhub-backend.onrender.com/api/dashboard/tickets/solvedAndPendingTickets"
         ),
         axios.post(
-          "https://govhub-backend-6375764a4f5c.herokuapp.com/api/dashboard/staff/solvedTickets",
+          "https://govhub-backend.onrender.com/api/dashboard/staff/solvedTickets",
           {
             duration,
             performance,

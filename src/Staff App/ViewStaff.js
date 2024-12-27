@@ -78,7 +78,7 @@ const ViewStaff = () => {
     setIsLoading(true);
     try {
       const res = await axios.get(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${id}`
+        `https://govhub-backend.onrender.com/api/staff/${id}`
       );
       setStaff(res.data);
     } catch (error) {

@@ -63,7 +63,7 @@ const MessageCenter = () => {
   const fetchDepartments = async () => {
     try {
       const response = await axios.get(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments"
+        "https://govhub-backend.onrender.com/api/departments"
       );
       setDepartments(response.data);
     } catch (error) {
@@ -76,7 +76,7 @@ const MessageCenter = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/messages"
+        "https://govhub-backend.onrender.com/api/messages"
       );
       setMessages(response.data);
     } catch (error) {
@@ -98,16 +98,13 @@ const MessageCenter = () => {
     }
 
     try {
-      await axios.post(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/messages",
-        {
-          senderId: user.id,
-          senderName: `${user.firstName} ${user.lastName}`,
-          senderDepartment: user.departmentID,
-          recipientDepartment: selectedDepartment,
-          content: newMessage,
-        }
-      );
+      await axios.post("https://govhub-backend.onrender.com/api/messages", {
+        senderId: user.id,
+        senderName: `${user.firstName} ${user.lastName}`,
+        senderDepartment: user.departmentID,
+        recipientDepartment: selectedDepartment,
+        content: newMessage,
+      });
       setNewMessage("");
       setSelectedDepartment("");
       fetchMessages();

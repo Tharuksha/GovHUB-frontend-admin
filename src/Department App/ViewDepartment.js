@@ -76,7 +76,7 @@ const ViewDepartment = () => {
     setIsLoading(true);
     try {
       const res = await axios.get(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments/${id}`
+        `https://govhub-backend.onrender.com/api/departments/${id}`
       );
       setDepartment(res.data);
       localStorage.setItem("departmentId", id);

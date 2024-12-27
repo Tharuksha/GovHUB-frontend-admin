@@ -86,17 +86,17 @@ const RejectTicket = () => {
     setIsLoading(true);
     try {
       const ticketRes = await axios.get(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets/${id}`
+        `https://govhub-backend.onrender.com/api/tickets/${id}`
       );
       setTicket(ticketRes.data);
 
       const customerRes = await axios.get(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/customers/${ticketRes.data.customerID}`
+        `https://govhub-backend.onrender.com/api/customers/${ticketRes.data.customerID}`
       );
       setCustomer(customerRes.data);
 
       const departmentRes = await axios.get(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments/${ticketRes.data.departmentID}`
+        `https://govhub-backend.onrender.com/api/departments/${ticketRes.data.departmentID}`
       );
       setDepartment(departmentRes.data);
 
@@ -116,15 +116,12 @@ const RejectTicket = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      await axios.put(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/tickets/${id}`,
-        {
-          status: "Rejected",
-          rejectionReason: rejectionReason,
-          staffID: user.id,
-          closedDate: new Date().toISOString(),
-        }
-      );
+      await axios.put(`https://govhub-backend.onrender.com/api/tickets/${id}`, {
+        status: "Rejected",
+        rejectionReason: rejectionReason,
+        staffID: user.id,
+        closedDate: new Date().toISOString(),
+      });
       toast.success("Ticket rejected successfully");
       navigate("/ticket");
     } catch (error) {

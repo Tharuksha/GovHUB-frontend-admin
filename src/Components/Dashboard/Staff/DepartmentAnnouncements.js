@@ -31,7 +31,7 @@ const DepartmentAnnouncements = ({ user }) => {
   const fetchAnnouncements = async () => {
     try {
       const response = await fetch(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/${user.departmentID}`
+        `https://govhub-backend.onrender.com/api/announcements/${user.departmentID}`
       );
       if (!response.ok) throw new Error("Failed to fetch announcements");
       const data = await response.json();
@@ -46,7 +46,7 @@ const DepartmentAnnouncements = ({ user }) => {
   const handlePostAnnouncement = async () => {
     try {
       const response = await fetch(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements",
+        "https://govhub-backend.onrender.com/api/announcements",
         {
           method: "POST",
           headers: {
@@ -76,7 +76,7 @@ const DepartmentAnnouncements = ({ user }) => {
   const handleDeleteAnnouncement = async (id) => {
     try {
       const response = await fetch(
-        `https://govhub-backend-6375764a4f5c.herokuapp.com/api/announcements/${id}`,
+        `https://govhub-backend.onrender.com/api/announcements/${id}`,
         {
           method: "DELETE",
           headers: {

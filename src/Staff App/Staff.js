@@ -81,7 +81,7 @@ const columns = [
         const fetchDepartmentName = async () => {
           try {
             const response = await axios.get(
-              `https://govhub-backend-6375764a4f5c.herokuapp.com/api/departments/${cell.getValue()}`
+              `https://govhub-backend.onrender.com/api/departments/${cell.getValue()}`
             );
             setDepartmentName(response.data.departmentName);
           } catch (error) {
@@ -140,7 +140,7 @@ const StaffApp = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        "https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff"
+        "https://govhub-backend.onrender.com/api/staff"
       );
       let filteredData = response.data;
 
@@ -202,7 +202,7 @@ const StaffApp = () => {
           onClick: async () => {
             try {
               await axios.delete(
-                `https://govhub-backend-6375764a4f5c.herokuapp.com/api/staff/${id}`
+                `https://govhub-backend.onrender.com/api/staff/${id}`
               );
               toast.success("Staff member deleted successfully");
               fetchData(); // Refetch data after deletion
